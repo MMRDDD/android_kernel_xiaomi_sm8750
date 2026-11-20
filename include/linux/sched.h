@@ -1075,7 +1075,7 @@ struct task_struct {
 
 	struct nameidata		*nameidata;
 
-#ifdef CONFIG_SYSVIPC
+#if defined(CONFIG_SYSVIPC) && !defined(CONFIG_ANDROID_KABI_RESERVE)
 	struct sysv_sem			sysvsem;
 	struct sysv_shm			sysvshm;
 #endif
@@ -1530,9 +1530,15 @@ struct task_struct {
 	ANDROID_KABI_RESERVE(3);
 	ANDROID_KABI_RESERVE(4);
 	ANDROID_KABI_RESERVE(5);
+#if defined(CONFIG_SYSVIPC) && defined(CONFIG_ANDROID_KABI_RESERVE)
+	ANDROID_KABI_USE(6, struct sysv_sem sysvsem);
+	_ANDROID_KABI_REPLACE(ANDROID_KABI_RESERVE(7); ANDROID_KABI_RESERVE(8),
+			      struct sysv_shm sysvshm);
+#else
 	ANDROID_KABI_RESERVE(6);
 	ANDROID_KABI_RESERVE(7);
 	ANDROID_KABI_RESERVE(8);
+#endif
 
 #ifdef CONFIG_RV
 	/*
